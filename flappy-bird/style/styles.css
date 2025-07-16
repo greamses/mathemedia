@@ -255,8 +255,9 @@ body {
   }
 
   #mathProblem {
-    font-size: 18px;
-    padding: 12px 18px;
+    font-size: 14px;
+    padding: 12px 12px;
+    width: fit-content;
   }
 
   .choice {
