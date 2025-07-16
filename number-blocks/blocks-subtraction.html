@@ -1,0 +1,1908 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base 10 Blocks - Column Addition & Subtraction</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&family=Nunito:wght@400;600;700;800&display=swap');
+        
+        /* Material Icons Import */
+        @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+        
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Fredoka One', 'Nunito', Arial, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+            color: #2C3E50;
+            position: relative;
+        }
+        
+        /* Animated background dots */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 20%, #FFE4B5 2px, transparent 2px),
+                radial-gradient(circle at 80% 80%, #98FB98 2px, transparent 2px),
+                radial-gradient(circle at 40% 60%, #FFB6C1 2px, transparent 2px),
+                radial-gradient(circle at 60% 40%, #DDA0DD 2px, transparent 2px);
+            background-size: 100px 100px, 120px 120px, 80px 80px, 90px 90px;
+            animation: floatDots 20s linear infinite;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        @keyframes floatDots {
+            0% {
+                transform: translateY(0px);
+            }
+            
+            50% {
+                transform: translateY(-20px);
+            }
+            
+            100% {
+                transform: translateY(0px);
+            }
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #FFFFFF;
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            border: 6px solid #FF6B6B;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Header */
+        .header {
+            background-color: #4ECDC4;
+            color: #FFFFFF;
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 6px solid #45B7AA;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.1) 15px, transparent 15px),
+                radial-gradient(circle at 90% 90%, rgba(255, 255, 255, 0.1) 12px, transparent 12px),
+                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 8px, transparent 8px);
+            background-size: 200px 200px, 180px 180px, 150px 150px;
+            animation: bubbleFloat 15s linear infinite;
+            z-index: 1;
+        }
+        
+        @keyframes bubbleFloat {
+            0% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            
+            100% {
+                transform: translateY(-30px) rotate(360deg);
+            }
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 400;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 0 #45B7AA;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            font-family: 'Fredoka One', cursive;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .header p {
+            font-size: 1.3rem;
+            font-weight: 600;
+            max-width: 600px;
+            margin: 0 auto;
+            color: #F0FFFF;
+            font-family: 'Nunito', sans-serif;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Operation Selector */
+        .operation-selector {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .operation-btn {
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+        }
+        
+        .operation-btn.active {
+            background-color: #FF6B6B;
+            color: white;
+            box-shadow: 0 4px 0 #E74C3C;
+        }
+        
+        .operation-btn:not(.active) {
+            background-color: #FFFFFF;
+            color: #FF6B6B;
+            border: 3px solid #FF6B6B;
+        }
+        
+        .operation-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2);
+        }
+        
+        .operation-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Main Content Layout */
+        .main-content {
+            display: flex;
+            min-height: 600px;
+            background-color: #F8F9FA;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 300px;
+            background-color: #FFE4B5;
+            padding: 25px;
+            border-right: 6px solid #F4D03F;
+            position: relative;
+        }
+        
+        .sidebar::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 15px;
+            background: repeating-linear-gradient(90deg,
+                    #FF6B6B 0px,
+                    #FF6B6B 15px,
+                    #4ECDC4 15px,
+                    #4ECDC4 30px,
+                    #45B7AA 30px,
+                    #45B7AA 45px,
+                    #F4D03F 45px,
+                    #F4D03F 60px);
+        }
+        
+        .sidebar h3 {
+            color: #E67E22;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 10px;
+            border-bottom: 4px dotted #F39C12;
+            font-family: 'Fredoka One', cursive;
+            text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Block Controls */
+        .block-controls {
+            margin-bottom: 25px;
+        }
+        
+        .block-type {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #FFFFFF;
+            border-radius: 20px;
+            border: 4px solid #DDA0DD;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .block-type::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: #DDA0DD;
+        }
+        
+        .block-type h4 {
+            color: #8E44AD;
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Fredoka One', cursive;
+            text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
+        }
+        
+        .block-input {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            color: #2C3E50;
+            font-family: 'Nunito', sans-serif;
+        }
+        
+        .block-input input {
+            width: 100%;
+            padding: 10px;
+            border: 4px solid #FF6B6B;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #E74C3C;
+            font-family: 'Nunito', sans-serif;
+            transition: all 0.3s ease;
+        }
+        
+        .block-input input:focus {
+            outline: none;
+            border-color: #4ECDC4;
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .add-blocks-btn {
+            background-color: #FF6B6B;
+            color: #FFFFFF;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+            box-shadow: 0 6px 0 #E74C3C;
+            width: 100%;
+            justify-content: center;
+            margin-top: 5px;
+        }
+        
+        .add-blocks-btn:hover {
+            background-color: #E74C3C;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 #C0392B;
+        }
+        
+        .add-blocks-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #C0392B;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .calculate-btn,
+        .clear-btn,
+        .step-btn {
+            padding: 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+            border: none;
+        }
+        
+        .calculate-btn {
+            background-color: #4ECDC4;
+            color: white;
+            box-shadow: 0 6px 0 #45B7AA;
+        }
+        
+        .calculate-btn:hover {
+            background-color: #45B7AA;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 #16A085;
+        }
+        
+        .clear-btn {
+            background-color: #E74C3C;
+            color: white;
+            box-shadow: 0 6px 0 #C0392B;
+        }
+        
+        .clear-btn:hover {
+            background-color: #C0392B;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 #A93226;
+        }
+        
+        .step-btn {
+            background-color: #9B59B6;
+            color: white;
+            box-shadow: 0 6px 0 #8E44AD;
+        }
+        
+        .step-btn:hover:not(:disabled) {
+            background-color: #8E44AD;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 #7D3C98;
+        }
+        
+        .step-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .calculate-btn:active,
+        .clear-btn:active,
+        .step-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Workspace */
+        .workspace {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            gap: 15px;
+        }
+        
+        .operand-area,
+        .result-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 400px;
+            background-color: white;
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border: 4px solid #DDA0DD;
+        }
+        
+        .operand-area h4,
+        .result-area h4 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #8E44AD;
+            font-family: 'Fredoka One', cursive;
+        }
+        
+        .canvas {
+            flex: 1;
+            border: 3px dashed #BDC3C7;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            position: relative;
+            min-height: 300px;
+        }
+        
+        .number-display {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2C3E50;
+            font-family: 'Fredoka One', cursive;
+            padding: 10px;
+            background-color: #F8F9FA;
+            border-radius: 10px;
+        }
+        
+        .operator-area,
+        .equals-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .operator,
+        .equals {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #FF6B6B;
+            font-family: 'Fredoka One', cursive;
+        }
+        
+        /* Steps Panel */
+        .steps-panel {
+            width: 250px;
+            background-color: #E8F8F5;
+            padding: 20px;
+            border-left: 6px solid #4ECDC4;
+            overflow-y: auto;
+        }
+        
+        .steps-panel h3 {
+            color: #16A085;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Fredoka One', cursive;
+        }
+        
+        .steps-list {
+            padding-left: 20px;
+            color: #2C3E50;
+            line-height: 1.6;
+            font-family: 'Nunito', sans-serif;
+        }
+        
+        .steps-list li {
+            margin-bottom: 10px;
+        }
+        
+        /* Blocks */
+        .block {
+            position: absolute;
+            cursor: move;
+            user-select: none;
+            transition: all 0.3s ease;
+            z-index: 10;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            touch-action: none;
+        }
+        
+        .block:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+        }
+        
+        .block.dragging {
+            z-index: 1000;
+            opacity: 0.9;
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Zoom Controls */
+        .zoom-controls {
+            background-color: #FFFFFF;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border: 4px solid #DDA0DD;
+        }
+        
+        .zoom-controls h4 {
+            margin: 0 0 15px 0;
+            color: #8E44AD;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Fredoka One', cursive;
+            text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
+        }
+        
+        .zoom-buttons {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        
+        .zoom-btn {
+            background-color: #4ECDC4;
+            color: #FFFFFF;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+            box-shadow: 0 4px 0 #45B7AA;
+        }
+        
+        .zoom-btn:hover {
+            background-color: #45B7AA;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #16A085;
+        }
+        
+        .zoom-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 0 #16A085;
+        }
+        
+        .zoom-btn:disabled {
+            background-color: #BDC3C7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 4px 0 #95A5A6;
+        }
+        
+        
+        /* Unit Block (1) */
+        .unit-block {
+            width: 35px;
+            height: 35px;
+            background-color: #FF6B6B;
+            border: 4px solid #E74C3C;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .unit-block::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(45deg, rgba(255, 255, 255, 0.2) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(255, 255, 255, 0.2) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.2) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.2) 75%);
+            background-size: 8px 8px;
+            background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+        }
+        
+        /* Ten Block (10) */
+        .ten-block {
+            width: 220px;
+            height: 35px;
+            background-color: #4ECDC4;
+            border: 4px solid #45B7AA;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ten-block::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(to right,
+                    rgba(255, 255, 255, 0.3),
+                    rgba(255, 255, 255, 0.3) 20px,
+                    transparent 20px,
+                    transparent 22px);
+        }
+        
+        .ten-block::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%);
+            background-size: 4px 4px;
+        }
+        
+        /* Hundred Block (100) */
+        .hundred-block {
+            width: 220px;
+            height: 220px;
+            background-color: #9045B7;
+            border: 4px solid #BF83DE;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hundred-block::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(to right,
+                    rgba(255, 255, 255, 0.2),
+                    rgba(255, 255, 255, 0.2) 20px,
+                    transparent 20px,
+                    transparent 22px),
+                repeating-linear-gradient(to bottom,
+                    rgba(255, 255, 255, 0.2),
+                    rgba(255, 255, 255, 0.2) 20px,
+                    transparent 20px,
+                    transparent 22px);
+        }
+        
+        .hundred-block::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%);
+            background-size: 6px 6px;
+        }
+        
+        /* Fun hover effects */
+        .material-icons {
+            font-size: 28px;
+            vertical-align: middle;
+            transition: transform 0.3s ease;
+        }
+        
+        .material-icons:hover {
+            transform: rotate(360deg);
+        }
+        
+        .operator {
+            transition: all 0.15s ease-in-out;
+        }
+        
+        .operator.transitioning {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        
+        .operation-btn {
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 6px solid #F4D03F;
+            }
+            
+            .workspace {
+                flex-direction: column;
+            }
+            
+            .steps-panel {
+                width: 100%;
+                border-left: none;
+                border-top: 6px solid #4ECDC4;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .header p {
+                font-size: 1.1rem;
+            }
+            
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                border-radius: 20px;
+                border-width: 4px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="material-icons">calculate</i> Base 10 Blocks</h1>
+            <p>Drag and drop blocks to visualize column addition and subtraction!</p>
+            <div class="operation-selector">
+                <button class="operation-btn" data-operation="subtract">Subtraction</button>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="sidebar">
+                <h3><i class="material-icons">add_circle</i> Add Blocks</h3>
+                
+                <div class="block-controls">
+                    <div class="block-type">
+                        <h4><i class="material-icons">crop_square</i> Units (1)</h4>
+                        <div class="block-input">
+                            <input type="number" id="unit-count" min="0" max="50" value="1">
+                            <button class="add-blocks-btn" data-target="operand1" data-type="unit">
+                                <i class="material-icons">add</i> Add to First Number
+                            </button>
+                            <button class="add-blocks-btn" data-target="operand2" data-type="unit">
+                                <i class="material-icons">add</i> Add to Second Number
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="block-type">
+                        <h4><i class="material-icons">more_horiz</i> Tens (10)</h4>
+                        <div class="block-input">
+                            <input type="number" id="ten-count" min="0" max="20" value="1">
+                            <button class="add-blocks-btn" data-target="operand1" data-type="ten">
+                                <i class="material-icons">add</i> Add to First Number
+                            </button>
+                            <button class="add-blocks-btn" data-target="operand2" data-type="ten">
+                                <i class="material-icons">add</i> Add to Second Number
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="block-type">
+                        <h4><i class="material-icons">grid_on</i> Hundreds (100)</h4>
+                        <div class="block-input">
+                            <input type="number" id="hundred-count" min="0" max="10" value="1">
+                            <button class="add-blocks-btn" data-target="operand1" data-type="hundred">
+                                <i class="material-icons">add</i> Add to First Number
+                            </button>
+                            <button class="add-blocks-btn" data-target="operand2" data-type="hundred">
+                                <i class="material-icons">add</i> Add to Second Number
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="calculate-btn">
+                        <i class="material-icons">play_arrow</i> Calculate
+                    </button>
+                    <button class="clear-btn">
+                        <i class="material-icons">delete</i> Clear All
+                    </button>
+                    <button class="step-btn" disabled>
+                        <i class="material-icons">skip_next</i> Next Step
+                    </button>
+                </div>
+            </div>
+            
+            <div class="workspace">
+                <div class="operand-area" id="operand1">
+                    <h4>First Number</h4>
+                    <div class="canvas"></div>
+                    <div class="number-display">0</div>
+                </div>
+                
+                <div class="operator-area">
+                    <div class="operator">+</div>
+                </div>
+                
+                <div class="operand-area" id="operand2">
+                    <h4>Second Number</h4>
+                    <div class="canvas"></div>
+                    <div class="number-display">0</div>
+                </div>
+                
+                <div class="equals-area">
+                    <div class="equals">=</div>
+                </div>
+                
+                <div class="result-area" id="result">
+                    <h4>Result</h4>
+                    <div class="canvas"></div>
+                    <div class="number-display">0</div>
+                </div>
+            </div>
+            
+            <div class="steps-panel">
+                <h3><i class="material-icons">list</i> Calculation Steps</h3>
+                <ol class="steps-list">
+                    <li>Build your numbers in the first two columns</li>
+                    <li>Click "Calculate" to see the steps</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let blockIdCounter = 0;
+            let draggedBlock = null;
+            let isDragging = false;
+            let touchOffset = { x: 0, y: 0 };
+            let currentOperation = 'subtract';
+            let calculationSteps = [];
+            let currentStep = 0;
+            let zoomLevel = 1;
+            const MIN_ZOOM = 0.5;
+            const MAX_ZOOM = 2;
+            const ZOOM_STEP = 0.1;
+            const DRAG_THRESHOLD = 5;
+            const ANIMATION_DURATION = 300;
+            const TRANSITION_DURATION = 800;
+            const DOUBLE_TAP_DELAY = 300;
+            let lastTapTime = 0;
+            let currentAddingToCanvas = '';
+            
+            document.querySelectorAll('.operation-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    document.querySelectorAll('.operation-btn').forEach(b => b.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    currentOperation = this.dataset.operation;
+                    
+                    // Update the operator symbol
+                    document.querySelector('.operator').textContent = currentOperation === 'add' ? '+' : '-';
+                    
+                    // Update button text based on operation
+                    updateButtonText();
+                    
+                    // Clear any existing calculation
+                    resetCalculation();
+                    
+                    // Update the steps panel instructions
+                    updateStepsPanel();
+                });
+            });
+            
+            function updateButtonText() {
+                const addButtons = document.querySelectorAll('.add-blocks-btn');
+                addButtons.forEach(btn => {
+                    const target = btn.dataset.target;
+                    const isFirstNumber = target === 'operand1';
+                    const isSecondNumber = target === 'operand2';
+                    
+                    if (currentOperation === 'subtract') {
+                        if (isFirstNumber) {
+                            btn.innerHTML = '<i class="material-icons">add</i> Add to Minuend';
+                        } else if (isSecondNumber) {
+                            btn.innerHTML = '<i class="material-icons">add</i> Add to Subtrahend';
+                        }
+                    } else {
+                        if (isFirstNumber) {
+                            btn.innerHTML = '<i class="material-icons">add</i> Add to First Number';
+                        } else if (isSecondNumber) {
+                            btn.innerHTML = '<i class="material-icons">add</i> Add to Second Number';
+                        }
+                    }
+                });
+            }
+            
+            function setupEventListeners() {
+                // Add block buttons
+                document.querySelectorAll('.add-blocks-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const type = this.dataset.type;
+                        const target = this.dataset.target;
+                        const countInput = document.getElementById(`${type}-count`);
+                        const count = parseInt(countInput.value) || 0;
+                        
+                        if (count > 0) {
+                            addBlocks(type, target, count);
+                            countInput.value = '1';
+                            updateNumberDisplays();
+                            resetCalculation();
+                        }
+                    });
+                });
+                
+                // Calculate button
+                document.querySelector('.calculate-btn').addEventListener('click', calculate);
+                
+                // Clear button
+                document.querySelector('.clear-btn').addEventListener('click', clearAll);
+                
+                // Step button
+                document.querySelector('.step-btn').addEventListener('click', showNextStep);
+            }
+            
+            function updateStepsPanel() {
+                const stepsList = document.querySelector('.steps-list');
+                stepsList.innerHTML = '';
+                
+                if (calculationSteps.length === 0) {
+                    if (currentOperation === 'subtract') {
+                        stepsList.innerHTML = `
+                    <li>Build your minuend (first number) and subtrahend (second number)</li>
+                    <li>Click "Calculate" to see subtraction with cancellation</li>
+                `;
+                    } else {
+                        stepsList.innerHTML = `
+                    <li>Build your numbers in the first two columns</li>
+                    <li>Click "Calculate" to see addition steps</li>
+                `;
+                    }
+                    return;
+                }
+                
+                calculationSteps.forEach((step, index) => {
+                    const li = document.createElement('li');
+                    li.textContent = step.description;
+                    if (index < currentStep) {
+                        li.style.color = '#28a745';
+                        li.style.fontWeight = 'bold';
+                    } else if (index === currentStep) {
+                        li.style.color = '#007bff';
+                        li.style.fontWeight = 'bold';
+                    }
+                    stepsList.appendChild(li);
+                });
+            }
+            
+            function initializeApp() {
+                setupEventListeners();
+                setupDragAndDrop();
+                updateNumberDisplays();
+                updateButtonText();
+                addZoomControls();
+                
+                // Set default operation to subtract
+                document.querySelector('[data-operation="subtract"]').click();
+            }
+            
+            // Initialize the app
+            initializeApp();
+            
+            function setupDragAndDrop() {
+                document.querySelectorAll('.canvas').forEach(canvas => {
+                    canvas.addEventListener('dragover', function(e) {
+                        e.preventDefault();
+                    });
+                    
+                    canvas.addEventListener('drop', function(e) {
+                        e.preventDefault();
+                        if (draggedBlock) {
+                            const rect = this.getBoundingClientRect();
+                            const x = e.clientX - rect.left - touchOffset.x;
+                            const y = e.clientY - rect.top - touchOffset.y;
+                            
+                            // Update block position
+                            draggedBlock.style.left = `${Math.max(0, Math.min(x, this.offsetWidth - draggedBlock.offsetWidth))}px`;
+                            draggedBlock.style.top = `${Math.max(0, Math.min(y, this.offsetHeight - draggedBlock.offsetHeight))}px`;
+                            
+                            // Append to this canvas if it's not already here
+                            if (draggedBlock.parentElement !== this) {
+                                this.appendChild(draggedBlock);
+                            }
+                            
+                            endDrag();
+                            updateNumberDisplays();
+                            resetCalculation();
+                        }
+                    });
+                });
+            }
+            
+            function createBlock(type) {
+                const block = document.createElement('div');
+                block.className = `block ${type}-block`;
+                block.id = `block-${blockIdCounter++}`;
+                
+                // Position and styling
+                block.style.position = 'absolute';
+                block.style.userSelect = 'none';
+                block.style.webkitUserSelect = 'none';
+                block.style.touchAction = 'none';
+                block.style.cursor = 'move';
+                
+                // Apply current zoom level
+                block.style.transform = `scale(${zoomLevel})`;
+                block.style.transformOrigin = 'center center';
+                
+                // Color blocks differently based on which canvas they're added to
+                if (currentAddingToCanvas === 'operand1') {
+                    block.setAttribute('data-origin', 'operand1');
+                    block.style.filter = 'hue-rotate(0deg)'; // Original color (blue)
+                } else if (currentAddingToCanvas === 'operand2') {
+                    block.setAttribute('data-origin', 'operand2');
+                    block.style.filter = 'hue-rotate(0deg) brightness(0.7)'; // Darker for subtrahend
+                }
+                
+                return block;
+            }
+            
+            function addBlocks(type, target, count) {
+                const canvas = document.getElementById(target).querySelector('.canvas');
+                currentAddingToCanvas = target; // Track which canvas we're adding to
+                
+                for (let i = 0; i < count; i++) {
+                    const block = createBlock(type);
+                    if (block) {
+                        // Temporarily append to canvas to get accurate dimensions
+                        block.style.left = '0px';
+                        block.style.top = '0px';
+                        canvas.appendChild(block);
+                        
+                        // Now calculate position with actual block dimensions
+                        const blockWidth = block.offsetWidth;
+                        const blockHeight = block.offsetHeight;
+                        const canvasWidth = canvas.offsetWidth;
+                        const canvasHeight = canvas.offsetHeight;
+                        
+                        // Calculate safe boundaries with padding
+                        const padding = 5;
+                        const maxX = Math.max(padding, canvasWidth - blockWidth - padding);
+                        const maxY = Math.max(padding, canvasHeight - blockHeight - padding);
+                        
+                        // Generate random position within safe boundaries
+                        const x = Math.floor(Math.random() * (maxX - padding) + padding);
+                        const y = Math.floor(Math.random() * (maxY - padding) + padding);
+                        
+                        // Apply the calculated position
+                        block.style.left = `${x}px`;
+                        block.style.top = `${y}px`;
+                        
+                        // Setup interactions
+                        setupBlockInteractions(block);
+                    }
+                }
+            }
+            
+            function setupBlockInteractions(block) {
+                let touchStartPos = null;
+                let hasMoved = false;
+                let tapCount = 0;
+                let tapTimeout = null;
+                
+                // Mouse events
+                block.addEventListener('mousedown', handleMouseDown);
+                block.addEventListener('dblclick', handleDoubleClick);
+                
+                // Touch events
+                block.addEventListener('touchstart', handleTouchStart, { passive: false });
+                block.addEventListener('touchmove', handleTouchMove, { passive: false });
+                block.addEventListener('touchend', handleTouchEnd, { passive: false });
+                
+                function handleMouseDown(e) {
+                    e.preventDefault();
+                    startDrag(block, e.clientX, e.clientY);
+                    
+                    document.addEventListener('mousemove', handleMouseMove);
+                    document.addEventListener('mouseup', handleMouseUp);
+                }
+                
+                function handleMouseMove(e) {
+                    if (draggedBlock === block) {
+                        moveDraggedBlock(e.clientX, e.clientY);
+                    }
+                }
+                
+                function handleMouseUp() {
+                    endDrag();
+                    document.removeEventListener('mousemove', handleMouseMove);
+                    document.removeEventListener('mouseup', handleMouseUp);
+                }
+                
+                function handleDoubleClick(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (!isDragging) {
+                        deleteBlock(block);
+                    }
+                }
+                
+                function handleTouchStart(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const touch = e.touches[0];
+                    touchStartPos = { x: touch.clientX, y: touch.clientY };
+                    hasMoved = false;
+                    
+                    const rect = block.getBoundingClientRect();
+                    touchOffset.x = touch.clientX - rect.left;
+                    touchOffset.y = touch.clientY - rect.top;
+                }
+                
+                function handleTouchMove(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    if (!touchStartPos) return;
+                    
+                    const touch = e.touches[0];
+                    const deltaX = Math.abs(touch.clientX - touchStartPos.x);
+                    const deltaY = Math.abs(touch.clientY - touchStartPos.y);
+                    
+                    if (!hasMoved && (deltaX > DRAG_THRESHOLD || deltaY > DRAG_THRESHOLD)) {
+                        hasMoved = true;
+                        startDrag(block, touch.clientX, touch.clientY);
+                    }
+                    
+                    if (hasMoved && draggedBlock === block) {
+                        moveDraggedBlock(touch.clientX, touch.clientY);
+                    }
+                }
+                
+                function handleTouchEnd(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const currentTime = new Date().getTime();
+                    const tapLength = currentTime - lastTapTime;
+                    
+                    if (!hasMoved) {
+                        // Handle tap (potential double-tap)
+                        if (tapCount === 0) {
+                            // First tap
+                            tapCount = 1;
+                            tapTimeout = setTimeout(() => {
+                                // Single tap (timeout expired)
+                                tapCount = 0;
+                                tapTimeout = null;
+                            }, DOUBLE_TAP_DELAY);
+                        } else if (tapCount === 1 && tapLength < DOUBLE_TAP_DELAY) {
+                            // Second tap within the time limit - double tap!
+                            clearTimeout(tapTimeout);
+                            tapCount = 0;
+                            tapTimeout = null;
+                            
+                            // Delete the block
+                            if (!isDragging) {
+                                deleteBlock(block);
+                            }
+                        }
+                        
+                        lastTapTime = currentTime;
+                    }
+                    
+                    endDrag();
+                    touchStartPos = null;
+                    hasMoved = false;
+                }
+            }
+            
+            function startDrag(block, clientX, clientY) {
+                draggedBlock = block;
+                isDragging = true;
+                block.classList.add('dragging');
+                block.style.zIndex = 9999;
+                
+                const canvas = block.closest('.canvas');
+                const canvasRect = canvas.getBoundingClientRect();
+                
+                if (!touchOffset.x && !touchOffset.y) {
+                    const rect = block.getBoundingClientRect();
+                    touchOffset.x = clientX - rect.left;
+                    touchOffset.y = clientY - rect.top;
+                }
+            }
+            
+            function moveDraggedBlock(clientX, clientY) {
+                if (!draggedBlock) return;
+                
+                const canvas = draggedBlock.closest('.canvas');
+                const canvasRect = canvas.getBoundingClientRect();
+                
+                const x = clientX - canvasRect.left - touchOffset.x;
+                const y = clientY - canvasRect.top - touchOffset.y;
+                
+                // Constrain to canvas bounds
+                const constrainedX = Math.max(0, Math.min(x, canvas.offsetWidth - draggedBlock.offsetWidth));
+                const constrainedY = Math.max(0, Math.min(y, canvas.offsetHeight - draggedBlock.offsetHeight));
+                
+                draggedBlock.style.left = constrainedX + 'px';
+                draggedBlock.style.top = constrainedY + 'px';
+            }
+            
+            function endDrag() {
+                if (draggedBlock) {
+                    draggedBlock.classList.remove('dragging');
+                }
+                
+                draggedBlock = null;
+                isDragging = false;
+                touchOffset = { x: 0, y: 0 };
+            }
+            
+            function deleteBlock(block) {
+                if (!block || !block.parentElement) return;
+                
+                const blockClone = block.cloneNode(true);
+                const parent = block.parentElement;
+                
+                // Remove the actual block immediately
+                block.remove();
+                
+                // Update displays immediately
+                updateNumberDisplays();
+                resetCalculation();
+                
+                blockClone.classList.add('deleting');
+                blockClone.style.pointerEvents = 'none';
+                parent.appendChild(blockClone);
+                
+                // Remove the clone after animation
+                setTimeout(() => {
+                    if (blockClone.parentElement) {
+                        blockClone.remove();
+                    }
+                }, ANIMATION_DURATION);
+            }
+            
+            function getBlockValue(type) {
+                const values = { unit: 1, ten: 10, hundred: 100 };
+                return values[type] || 0;
+            }
+            
+            function getNumberFromCanvas(canvas) {
+                let total = 0;
+                const blocks = canvas.querySelectorAll('.block:not(.deleting)');
+                
+                blocks.forEach(block => {
+                    const type = block.classList[1].replace('-block', '');
+                    total += getBlockValue(type);
+                });
+                
+                return total;
+            }
+            
+            function updateNumberDisplays() {
+                document.querySelectorAll('.operand-area, .result-area').forEach(area => {
+                    const canvas = area.querySelector('.canvas');
+                    const display = area.querySelector('.number-display');
+                    const value = getNumberFromCanvas(canvas);
+                    display.textContent = value.toLocaleString();
+                });
+            }
+            
+            function clearAll() {
+                document.querySelectorAll('.canvas').forEach(canvas => {
+                    const blocks = Array.from(canvas.querySelectorAll('.block'));
+                    blocks.forEach(block => {
+                        deleteBlock(block);
+                    });
+                });
+                
+                resetCalculation();
+                updateNumberDisplays();
+            }
+            
+            function resetCalculation() {
+                calculationSteps = [];
+                currentStep = 0;
+                document.querySelector('.step-btn').disabled = true;
+                
+                // Clear result canvas
+                const resultCanvas = document.getElementById('result').querySelector('.canvas');
+                const resultBlocks = Array.from(resultCanvas.querySelectorAll('.block'));
+                resultBlocks.forEach(block => {
+                    deleteBlock(block);
+                });
+                
+                // Reset steps panel
+                updateStepsPanel();
+            }
+            
+            function prepareSubtractionSteps(operand1Canvas, operand2Canvas, resultCanvas) {
+                // Step 1: Move minuend to result canvas
+                calculationSteps.push({
+                    description: "Move minuend (first number) to result area",
+                    action: () => {
+                        return new Promise(resolve => {
+                            const blocks1 = Array.from(operand1Canvas.querySelectorAll('.block:not(.deleting)'));
+                            moveBlocksToCanvas(blocks1, resultCanvas).then(() => {
+                                updateNumberDisplays();
+                                resolve();
+                            });
+                        });
+                    }
+                });
+                
+                // Step 2: Check if regrouping is needed and perform it
+                const minuendBlocks = getBlockCounts(operand1Canvas);
+                const subtrahendBlocks = getBlockCounts(operand2Canvas);
+                
+                // Check regrouping needs starting from units
+                if (minuendBlocks.unit < subtrahendBlocks.unit && minuendBlocks.ten > 0) {
+                    calculationSteps.push({
+                        description: "Regroup: Trade 1 ten for 10 units",
+                        action: () => {
+                            return regroupForSubtraction(resultCanvas, 'ten', 'unit');
+                        }
+                    });
+                }
+                
+                if ((minuendBlocks.ten - (minuendBlocks.unit < subtrahendBlocks.unit ? 1 : 0)) < subtrahendBlocks.ten && minuendBlocks.hundred > 0) {
+                    calculationSteps.push({
+                        description: "Regroup: Trade 1 hundred for 10 tens",
+                        action: () => {
+                            return regroupForSubtraction(resultCanvas, 'hundred', 'ten');
+                        }
+                    });
+                }
+                
+                // Step 3: Cancel out hundreds
+                if (subtrahendBlocks.hundred > 0) {
+                    calculationSteps.push({
+                        description: `Cancel out ${subtrahendBlocks.hundred} hundred${subtrahendBlocks.hundred > 1 ? 's' : ''}`,
+                        action: () => {
+                            return cancelOutBlocksWithSubtrahend(resultCanvas, operand2Canvas, subtrahendBlocks.hundred, 'hundred');
+                        }
+                    });
+                }
+                
+                // Step 4: Cancel out tens
+                if (subtrahendBlocks.ten > 0) {
+                    calculationSteps.push({
+                        description: `Cancel out ${subtrahendBlocks.ten} ten${subtrahendBlocks.ten > 1 ? 's' : ''}`,
+                        action: () => {
+                            return cancelOutBlocksWithSubtrahend(resultCanvas, operand2Canvas, subtrahendBlocks.ten, 'ten');
+                        }
+                    });
+                }
+                
+                // Step 5: Cancel out units
+                if (subtrahendBlocks.unit > 0) {
+                    calculationSteps.push({
+                        description: `Cancel out ${subtrahendBlocks.unit} unit${subtrahendBlocks.unit > 1 ? 's' : ''}`,
+                        action: () => {
+                            return cancelOutBlocksWithSubtrahend(resultCanvas, operand2Canvas, subtrahendBlocks.unit, 'unit');
+                        }
+                    });
+                }
+            }
+            
+            function cancelOutBlocksWithSubtrahend(resultCanvas, subtrahendCanvas, count, type) {
+                return new Promise(resolve => {
+                    const resultBlocks = Array.from(resultCanvas.querySelectorAll(`.${type}-block:not(.deleting)`));
+                    const subtrahendBlocks = Array.from(subtrahendCanvas.querySelectorAll(`.${type}-block:not(.deleting)`));
+                    
+                    const resultBlocksToRemove = resultBlocks.slice(0, count);
+                    const subtrahendBlocksToRemove = subtrahendBlocks.slice(0, count);
+                    
+                    if (resultBlocksToRemove.length === 0 && subtrahendBlocksToRemove.length === 0) {
+                        resolve();
+                        return;
+                    }
+                    
+                    let completed = 0;
+                    const totalBlocks = resultBlocksToRemove.length + subtrahendBlocksToRemove.length;
+                    
+                    // Animate result canvas blocks
+                    resultBlocksToRemove.forEach((block, index) => {
+                        const centerX = resultCanvas.offsetWidth / 2;
+                        const centerY = resultCanvas.offsetHeight / 2;
+                        
+                        block.style.transition = `left ${TRANSITION_DURATION}ms ease-in-out, top ${TRANSITION_DURATION}ms ease-in-out, opacity ${TRANSITION_DURATION}ms ease-in-out, transform ${TRANSITION_DURATION}ms ease-in-out`;
+                        block.style.left = `${centerX - block.offsetWidth / 2}px`;
+                        block.style.top = `${centerY - block.offsetHeight / 2}px`;
+                        block.style.opacity = '0.3';
+                        block.style.transform = `scale(${zoomLevel * 0.5})`;
+                        
+                        setTimeout(() => {
+                            block.style.backgroundColor = '#ff4444';
+                            block.style.opacity = '0';
+                            
+                            setTimeout(() => {
+                                block.remove();
+                                completed++;
+                                
+                                if (completed === totalBlocks) {
+                                    updateNumberDisplays();
+                                    resolve();
+                                }
+                            }, ANIMATION_DURATION);
+                        }, TRANSITION_DURATION);
+                    });
+                    
+                    // Animate subtrahend canvas blocks (synchronized)
+                    subtrahendBlocksToRemove.forEach((block, index) => {
+                        const centerX = subtrahendCanvas.offsetWidth / 2;
+                        const centerY = subtrahendCanvas.offsetHeight / 2;
+                        
+                        block.style.transition = `left ${TRANSITION_DURATION}ms ease-in-out, top ${TRANSITION_DURATION}ms ease-in-out, opacity ${TRANSITION_DURATION}ms ease-in-out, transform ${TRANSITION_DURATION}ms ease-in-out`;
+                        block.style.left = `${centerX - block.offsetWidth / 2}px`;
+                        block.style.top = `${centerY - block.offsetHeight / 2}px`;
+                        block.style.opacity = '0.3';
+                        block.style.transform = `scale(${zoomLevel * 0.5})`;
+                        
+                        setTimeout(() => {
+                            block.style.backgroundColor = '#ff4444';
+                            block.style.opacity = '0';
+                            
+                            setTimeout(() => {
+                                block.remove();
+                                completed++;
+                                
+                                if (completed === totalBlocks) {
+                                    updateNumberDisplays();
+                                    resolve();
+                                }
+                            }, ANIMATION_DURATION);
+                        }, TRANSITION_DURATION);
+                    });
+                });
+            }
+            
+            function getBlockCounts(canvas) {
+                const blocks = canvas.querySelectorAll('.block:not(.deleting)');
+                const counts = { unit: 0, ten: 0, hundred: 0 };
+                
+                blocks.forEach(block => {
+                    const type = block.classList[1].replace('-block', '');
+                    counts[type]++;
+                });
+                
+                return counts;
+            }
+            
+            function regroupForSubtraction(canvas, fromType, toType) {
+                return new Promise(resolve => {
+                    const fromBlocks = Array.from(canvas.querySelectorAll(`.${fromType}-block:not(.deleting)`));
+                    
+                    if (fromBlocks.length === 0) {
+                        resolve();
+                        return;
+                    }
+                    
+                    // Take one block to regroup
+                    const blockToRegroup = fromBlocks[0];
+                    
+                    // Animate the block to center
+                    const centerX = canvas.offsetWidth / 2;
+                    const centerY = canvas.offsetHeight / 2;
+                    
+                    blockToRegroup.style.transition = `left ${TRANSITION_DURATION}ms ease-in-out, top ${TRANSITION_DURATION}ms ease-in-out, transform ${TRANSITION_DURATION}ms ease-in-out`;
+                    blockToRegroup.style.left = `${centerX - blockToRegroup.offsetWidth / 2}px`;
+                    blockToRegroup.style.top = `${centerY - blockToRegroup.offsetHeight / 2}px`;
+                    blockToRegroup.style.transform = `scale(${zoomLevel * 1.2})`;
+                    
+                    setTimeout(() => {
+                        // Remove the original block
+                        blockToRegroup.remove();
+                        
+                        // Add 10 new blocks of the target type
+                        for (let i = 0; i < 10; i++) {
+                            const newBlock = createBlock(toType);
+                            if (newBlock) {
+                                const blockSize = 50;
+                                const padding = 10;
+                                const maxX = Math.max(padding, canvas.offsetWidth - blockSize - padding);
+                                const maxY = Math.max(padding, canvas.offsetHeight - blockSize - padding);
+                                const x = Math.floor(Math.random() * (maxX - padding) + padding);
+                                const y = Math.floor(Math.random() * (maxY - padding) + padding);
+                                
+                                newBlock.style.left = `${x}px`;
+                                newBlock.style.top = `${y}px`;
+                                newBlock.style.transform = `scale(${zoomLevel * 0.8})`;
+                                newBlock.style.transition = `transform ${TRANSITION_DURATION}ms ease-out`;
+                                canvas.appendChild(newBlock);
+                                
+                                // Animate to normal size
+                                setTimeout(() => {
+                                    newBlock.style.transform = `scale(${zoomLevel})`;
+                                    newBlock.style.transition = '';
+                                }, 100);
+                                
+                                setupBlockInteractions(newBlock);
+                            }
+                        }
+                        
+                        updateNumberDisplays();
+                        resolve();
+                    }, TRANSITION_DURATION);
+                });
+            }
+            
+            function cancelOutBlocks(canvas, count, type) {
+                return new Promise(resolve => {
+                    const blocks = Array.from(canvas.querySelectorAll(`.${type}-block:not(.deleting)`));
+                    const blocksToRemove = blocks.slice(0, count);
+                    
+                    if (blocksToRemove.length === 0) {
+                        resolve();
+                        return;
+                    }
+                    
+                    let completed = 0;
+                    
+                    blocksToRemove.forEach((block, index) => {
+                        // Animate blocks coming together at center
+                        const centerX = canvas.offsetWidth / 2;
+                        const centerY = canvas.offsetHeight / 2;
+                        
+                        block.style.transition = `left ${TRANSITION_DURATION}ms ease-in-out, top ${TRANSITION_DURATION}ms ease-in-out, opacity ${TRANSITION_DURATION}ms ease-in-out, transform ${TRANSITION_DURATION}ms ease-in-out`;
+                        block.style.left = `${centerX - block.offsetWidth / 2}px`;
+                        block.style.top = `${centerY - block.offsetHeight / 2}px`;
+                        block.style.opacity = '0.3';
+                        block.style.transform = `scale(${zoomLevel * 0.5})`;
+                        
+                        setTimeout(() => {
+                            // Add cancellation effect
+                            block.style.backgroundColor = '#ff4444';
+                            block.style.opacity = '0';
+                            
+                            setTimeout(() => {
+                                block.remove();
+                                completed++;
+                                
+                                if (completed === blocksToRemove.length) {
+                                    updateNumberDisplays();
+                                    resolve();
+                                }
+                            }, ANIMATION_DURATION);
+                        }, TRANSITION_DURATION);
+                    });
+                });
+            }
+            
+            function moveBlocksToCanvas(blocks, targetCanvas) {
+                return new Promise(resolve => {
+                    if (blocks.length === 0) {
+                        resolve();
+                        return;
+                    }
+                    
+                    let completed = 0;
+                    const targetRect = targetCanvas.getBoundingClientRect();
+                    
+                    blocks.forEach((block, index) => {
+                        const blockRect = block.getBoundingClientRect();
+                        const relativeX = blockRect.left - targetRect.left;
+                        const relativeY = blockRect.top - targetRect.top;
+                        
+                        // Set initial position relative to target canvas
+                        block.style.position = 'absolute';
+                        block.style.left = `${relativeX}px`;
+                        block.style.top = `${relativeY}px`;
+                        
+                        // Append to target canvas
+                        targetCanvas.appendChild(block);
+                        
+                        // Animate to random position within target canvas
+                        const maxX = Math.max(0, targetCanvas.offsetWidth - block.offsetWidth);
+                        const maxY = Math.max(0, targetCanvas.offsetHeight - block.offsetHeight);
+                        const newX = Math.floor(Math.random() * (maxX + 1));
+                        const newY = Math.floor(Math.random() * (maxY + 1));
+                        
+                        block.style.transition = `left ${TRANSITION_DURATION}ms ease-out, top ${TRANSITION_DURATION}ms ease-out`;
+                        block.style.left = `${newX}px`;
+                        block.style.top = `${newY}px`;
+                        
+                        setTimeout(() => {
+                            block.style.transition = '';
+                            completed++;
+                            
+                            if (completed === blocks.length) {
+                                resolve();
+                            }
+                        }, TRANSITION_DURATION);
+                    });
+                });
+            }
+            
+            function calculate() {
+                const operand1Canvas = document.getElementById('operand1').querySelector('.canvas');
+                const operand2Canvas = document.getElementById('operand2').querySelector('.canvas');
+                const resultCanvas = document.getElementById('result').querySelector('.canvas');
+                
+                // Check if minuend is smaller than subtrahend
+                const minuend = getNumberFromCanvas(operand1Canvas);
+                const subtrahend = getNumberFromCanvas(operand2Canvas);
+                
+                if (minuend < subtrahend) {
+                    alert('Cannot subtract a larger number from a smaller number in this visualization. Please adjust your numbers.');
+                    return;
+                }
+                
+                // Clear previous result
+                const resultBlocks = Array.from(resultCanvas.querySelectorAll('.block'));
+                resultBlocks.forEach(block => {
+                    deleteBlock(block);
+                });
+                
+                // Prepare calculation steps
+                calculationSteps = [];
+                currentStep = 0;
+                
+                if (currentOperation === 'subtract') {
+                    prepareSubtractionSteps(operand1Canvas, operand2Canvas, resultCanvas);
+                } else {
+                    prepareAdditionSteps(operand1Canvas, operand2Canvas, resultCanvas);
+                }
+                
+                // Update steps panel
+                updateStepsPanel();
+                
+                // Enable step button if there are steps
+                document.querySelector('.step-btn').disabled = calculationSteps.length === 0;
+            }
+            
+            function prepareAdditionSteps(operand1Canvas, operand2Canvas, resultCanvas) {
+                // Step 1: Combine all blocks
+                calculationSteps.push({
+                    description: "Combine all blocks from both numbers",
+                    action: () => {
+                        return new Promise(resolve => {
+                            // Move all blocks from operand1 to result
+                            const blocks1 = Array.from(operand1Canvas.querySelectorAll('.block:not(.deleting)'));
+                            moveBlocksToCanvas(blocks1, resultCanvas).then(() => {
+                                // Then move all blocks from operand2 to result
+                                const blocks2 = Array.from(operand2Canvas.querySelectorAll('.block:not(.deleting)'));
+                                return moveBlocksToCanvas(blocks2, resultCanvas);
+                            }).then(() => {
+                                updateNumberDisplays();
+                                resolve();
+                            });
+                        });
+                    }
+                });
+                
+                // Step 2: Regroup units
+                calculationSteps.push({
+                    description: "Regroup units into tens (if 10 or more units)",
+                    action: () => {
+                        return regroupBlocks(resultCanvas, 'unit', 'ten');
+                    }
+                });
+                
+                // Step 3: Regroup tens
+                calculationSteps.push({
+                    description: "Regroup tens into hundreds (if 10 or more tens)",
+                    action: () => {
+                        return regroupBlocks(resultCanvas, 'ten', 'hundred');
+                    }
+                });
+            }
+            
+            function regroupBlocks(canvas, fromType, toType) {
+                return new Promise(resolve => {
+                    const blocks = Array.from(canvas.querySelectorAll(`.${fromType}-block:not(.deleting)`));
+                    const groups = Math.floor(blocks.length / 10);
+                    
+                    if (groups === 0) {
+                        resolve();
+                        return;
+                    }
+                    
+                    // Get blocks to regroup (first 10 blocks for each group)
+                    const blocksToRegroup = blocks.slice(0, groups * 10);
+                    
+                    // Animate blocks coming together first
+                    animateBlocksComingTogether(blocksToRegroup, canvas).then(() => {
+                        // Then remove the blocks and add new regrouped blocks
+                        setTimeout(() => {
+                            // Remove blocks immediately from DOM for accurate counting
+                            blocksToRegroup.forEach(block => {
+                                const blockClone = block.cloneNode(true);
+                                const parent = block.parentElement;
+                                
+                                // Remove actual block immediately
+                                block.remove();
+                                
+                                // Add clone for animation
+                                blockClone.classList.add('deleting');
+                                blockClone.style.pointerEvents = 'none';
+                                parent.appendChild(blockClone);
+                                
+                                setTimeout(() => {
+                                    if (blockClone.parentElement) {
+                                        blockClone.remove();
+                                    }
+                                }, ANIMATION_DURATION);
+                            });
+                            
+                            // Add new regrouped blocks with proper positioning
+                            for (let i = 0; i < groups; i++) {
+                                const block = createBlock(toType);
+                                if (block) {
+                                    // Calculate safe position within canvas bounds
+                                    const blockSize = 50; // Approximate block size
+                                    const padding = 10;
+                                    const maxX = Math.max(padding, canvas.offsetWidth - blockSize - padding);
+                                    const maxY = Math.max(padding, canvas.offsetHeight - blockSize - padding);
+                                    const x = Math.floor(Math.random() * (maxX - padding) + padding);
+                                    const y = Math.floor(Math.random() * (maxY - padding) + padding);
+                                    
+                                    block.style.left = `${x}px`;
+                                    block.style.top = `${y}px`;
+                                    canvas.appendChild(block);
+                                    
+                                    // Setup interactions
+                                    setupBlockInteractions(block);
+                                }
+                            }
+                            
+                            updateNumberDisplays();
+                            resolve();
+                        }, 500); // Small delay to show the coming together effect
+                    });
+                });
+            }
+            
+            function animateBlocksComingTogether(blocks, canvas) {
+                return new Promise(resolve => {
+                    if (blocks.length === 0) {
+                        resolve();
+                        return;
+                    }
+                    
+                    // Calculate center position of canvas
+                    const centerX = canvas.offsetWidth / 2;
+                    const centerY = canvas.offsetHeight / 2;
+                    
+                    // Create a tight cluster around center
+                    const clusterRadius = 30;
+                    let completed = 0;
+                    
+                    blocks.forEach((block, index) => {
+                        // Calculate position in tight cluster
+                        const angle = (index / blocks.length) * 2 * Math.PI;
+                        const distance = Math.random() * clusterRadius;
+                        const targetX = centerX + Math.cos(angle) * distance - block.offsetWidth / 2;
+                        const targetY = centerY + Math.sin(angle) * distance - block.offsetHeight / 2;
+                        
+                        // Ensure blocks stay within canvas bounds
+                        const constrainedX = Math.max(0, Math.min(targetX, canvas.offsetWidth - block.offsetWidth));
+                        const constrainedY = Math.max(0, Math.min(targetY, canvas.offsetHeight - block.offsetHeight));
+                        
+                        block.style.transition = `left ${TRANSITION_DURATION}ms ease-in-out, top ${TRANSITION_DURATION}ms ease-in-out`;
+                        block.style.left = `${constrainedX}px`;
+                        block.style.top = `${constrainedY}px`;
+                        
+                        setTimeout(() => {
+                            block.style.transition = '';
+                            completed++;
+                            
+                            if (completed === blocks.length) {
+                                resolve();
+                            }
+                        }, TRANSITION_DURATION);
+                    });
+                });
+            }
+            
+            function showNextStep() {
+                if (currentStep < calculationSteps.length) {
+                    // Highlight current step
+                    updateStepsPanel();
+                    
+                    // Execute step action
+                    calculationSteps[currentStep].action().then(() => {
+                        currentStep++;
+                        document.querySelector('.step-btn').disabled = currentStep >= calculationSteps.length;
+                        
+                        // Update steps panel to show completed steps
+                        updateStepsPanel();
+                    });
+                }
+            }
+            
+            // Zoom control functions
+            function addZoomControls() {
+                const zoomControlsHTML = `
+            <div class="zoom-controls">
+                <h4><i class="material-icons">zoom_in</i> Zoom Controls</h4>
+                <div class="zoom-buttons">
+                    <button class="zoom-btn" id="zoom-out-btn">
+                        <i class="material-icons">zoom_out</i> 
+                    </button>
+                    <span class="zoom-level">${Math.round(zoomLevel * 100)}%</span>
+                    <button class="zoom-btn" id="zoom-in-btn">
+                        <i class="material-icons">zoom_in</i> 
+                    </button>
+                </div>
+                <button class="zoom-btn" id="reset-zoom-btn">
+                    <i class="material-icons">center_focus_weak</i> Reset Zoom
+                </button>
+            </div>
+        `;
+                
+                const placeValueDisplay = document.querySelector('.block-controls');
+                if (placeValueDisplay) {
+                    placeValueDisplay.insertAdjacentHTML('afterend', zoomControlsHTML);
+                    
+                    // Add event listeners to zoom buttons
+                    document.getElementById('zoom-in-btn').addEventListener('click', zoomIn);
+                    document.getElementById('zoom-out-btn').addEventListener('click', zoomOut);
+                    document.getElementById('reset-zoom-btn').addEventListener('click', resetZoom);
+                }
+            }
+            
+            function zoomIn() {
+                if (zoomLevel < MAX_ZOOM) {
+                    zoomLevel = Math.min(MAX_ZOOM, zoomLevel + ZOOM_STEP);
+                    applyZoom();
+                }
+            }
+            
+            function zoomOut() {
+                if (zoomLevel > MIN_ZOOM) {
+                    zoomLevel = Math.max(MIN_ZOOM, zoomLevel - ZOOM_STEP);
+                    applyZoom();
+                }
+            }
+            
+            function resetZoom() {
+                zoomLevel = 1;
+                applyZoom();
+            }
+            
+            function applyZoom() {
+                // Apply zoom to all blocks
+                document.querySelectorAll('.block').forEach(block => {
+                    block.style.transform = `scale(${zoomLevel})`;
+                    block.style.transformOrigin = 'center center';
+                });
+                
+                // Update zoom level display
+                const zoomLevelElement = document.querySelector('.zoom-level');
+                if (zoomLevelElement) {
+                    zoomLevelElement.textContent = `${Math.round(zoomLevel * 100)}%`;
+                }
+                
+                updateZoomButtonStates();
+            }
+            
+            function updateZoomButtonStates() {
+                const zoomOutBtn = document.getElementById('zoom-out-btn');
+                const zoomInBtn = document.getElementById('zoom-in-btn');
+                
+                if (zoomOutBtn) {
+                    zoomOutBtn.disabled = zoomLevel <= MIN_ZOOM;
+                }
+                
+                if (zoomInBtn) {
+                    zoomInBtn.disabled = zoomLevel >= MAX_ZOOM;
+                }
+            }
+            
+            window.zoomIn = zoomIn;
+            window.zoomOut = zoomOut;
+            window.resetZoom = resetZoom;
+        });
+    </script>
+</body>
+
+</html>
