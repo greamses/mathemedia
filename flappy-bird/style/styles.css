@@ -27,9 +27,17 @@ body {
 }
 
 @keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  
+  50% {
+    background-position: 100% 50%;
+  }
+  
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .game-container {
@@ -40,8 +48,23 @@ body {
   max-height: 600px;
   display: flex;
   flex-direction: column;
-  
 }
+
+
+.modal-content {
+  border: 4px solid #000;
+  background: #FFFDF0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  margin: 5% auto;
+  padding: 30px;
+  width: 90%;
+  max-width: 600px;
+  position: relative;
+}
+
 
 #gameCanvas {
   border: 4px solid #000;
@@ -63,6 +86,18 @@ body {
   border: 3px solid #000;
   box-shadow: 4px 4px 0px #000;
   z-index: 10;
+  font-family: 'Press Start 2P', monospace;
+}
+
+.modal-button {
+  font-size: 16px;
+  padding: 12px 24px;
+  background-color: #4ECDC4;
+  color: #000;
+  border: 3px solid #000;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  box-shadow: 4px 4px 0px #000;
   font-family: 'Press Start 2P', monospace;
 }
 
@@ -91,6 +126,8 @@ body {
   box-shadow: 6px 6px 0px #000;
   margin-bottom: 16px;
   font-family: 'Press Start 2P', monospace;
+  min-width: fit-content;
+  text-wrap: nowrap;
 }
 
 #choices {
@@ -244,49 +281,49 @@ body {
   body {
     padding: 10px;
   }
-
+  
   .game-container {
     height: calc(100vh - 20px);
   }
-
+  
   #score {
     font-size: 12px;
     padding: 6px 12px;
   }
-
+  
   #mathProblem {
     font-size: 14px;
     padding: 12px 12px;
-    width: fit-content;
+    
   }
-
+  
   .choice {
     font-size: 12px;
     padding: 10px 16px;
   }
-
+  
   #gameOver {
     padding: 24px;
     width: 280px;
   }
-
+  
   #gameOver h2 {
     font-size: 18px;
   }
-
+  
   #finalScore {
     font-size: 14px;
   }
-
+  
   #restartButton {
     font-size: 12px;
     padding: 10px 20px;
   }
-
+  
   #startScreen h2 {
     font-size: 16px;
   }
-
+  
   .tableChoice {
     font-size: 12px;
     padding: 10px 20px;

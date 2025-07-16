@@ -351,7 +351,7 @@ function preloadSounds() {
 
 document.querySelectorAll('.tableChoice').forEach(button => {
   button.addEventListener('click', () => {
-    const maxNumber = parseInt(button.getAttribute('data-table')); // Keep attribute name for compatibility
+    const maxNumber = parseInt(button.getAttribute('data-table')); 
     startGame(maxNumber);
   });
 });

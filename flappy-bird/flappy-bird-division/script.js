@@ -83,7 +83,7 @@ function stopMusic() {
 function startGame(table) {
   selectedTable = table;
   startScreen.style.display = 'none';
-  generateSubtractionProblem();
+  generateDivisionProblem(); // Changed to division
   startMusic();
   preloadSounds();
   canvas.setAttribute('height', gameHeight - 70);
@@ -113,11 +113,10 @@ function handleChoice(choice) {
     correctSound.play();
     updateScore();
     
-    // Delay next problem generation
     setTimeout(() => {
       enableChoices();
-      generateSubtractionProblem();
-    }, 800); // Increased delay for better flow
+      generateDivisionProblem();
+    }, 800);
   } else {
     wrongSound.currentTime = 0;
     wrongSound.play();
@@ -222,33 +221,41 @@ function updateScore() {
   scoreElement.textContent = `Score: ${score}`;
 }
 
-function generateSubtractionProblem() {
+function generateDivisionProblem() {
   if (selectedTable === null || isGeneratingProblem) return;
   
   isGeneratingProblem = true;
   problemCount++;
   
-  // Generate valid subtraction problem
-  const minuend = Math.max(selectedTable + 2, Math.floor(Math.random() * 15) + selectedTable + 1);
-  const subtrahend = minuend - selectedTable;
-  const correctAnswer = subtrahend;
+  // Generate valid division problem where:
+  // dividend ÷ divisor = selectedTable (quotient)
+  const divisor = Math.max(1, Math.floor(Math.random() * 10) + 1); // Random divisor between 1-10
+  const dividend = selectedTable * divisor; // Ensure clean division
   
-  console.log(`Problem ${problemCount}: ${minuend} - ${subtrahend} = ${selectedTable}`);
+  console.log(`Problem ${problemCount}: ${dividend} ÷ ? = ${selectedTable} (Answer: ${divisor})`);
   
-  mathProblemElement.textContent = `${minuend} - ? = ${selectedTable}`;
-  currentProblem = { answer: correctAnswer };
+  mathProblemElement.textContent = `${dividend} ÷ ? = ${selectedTable}`;
+  currentProblem = { answer: divisor }; // Player needs to select the divisor
   
-  // Generate choices
-  let choices = [correctAnswer];
+  // Generate choices (including the correct divisor)
+  let choices = [divisor];
   while (choices.length < 4) {
-    const offset = Math.floor(Math.random() * 5) - 2;
-    const wrongChoice = Math.max(1, correctAnswer + offset);
-    if (wrongChoice !== correctAnswer && !choices.includes(wrongChoice)) {
+    let wrongChoice;
+    // Generate plausible wrong answers
+    if (Math.random() > 0.5) {
+      // Nearby numbers
+      wrongChoice = Math.max(1, divisor + Math.floor(Math.random() * 3) - 1);
+    } else {
+      // Random number between 1-10
+      wrongChoice = Math.max(1, Math.floor(Math.random() * 10) + 1);
+    }
+    
+    if (wrongChoice !== divisor && !choices.includes(wrongChoice)) {
       choices.push(wrongChoice);
     }
   }
   
-  // Clear and recreate choice buttons
+  // Display choices
   choicesElement.innerHTML = '';
   choices.sort(() => Math.random() - 0.5).forEach((choice, index) => {
     const button = document.createElement('button');
@@ -354,4 +361,3 @@ document.querySelectorAll('.tableChoice').forEach(button => {
 
 updateScore();
 gameLoop();
-
