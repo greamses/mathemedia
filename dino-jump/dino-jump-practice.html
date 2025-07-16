@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dinosaur Number Line Jump Activity</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Neue', cursive, sans-serif;
+            background-color: #f0f9ff;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            border: 4px solid #4ecdc4;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ff6b6b;
+            font-size: 2.2em;
+            margin-bottom: 25px;
+            font-family: 'Fredoka One', cursive;
+            letter-spacing: 0.5px;
+            background-color: #fff2cc;
+            padding: 15px;
+            border-radius: 12px;
+            border: 3px solid #ffd166;
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 180px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #2a9d8f;
+            font-size: 1.1em;
+        }
+
+        select {
+            padding: 10px;
+            font-size: 1em;
+            border: 2px solid #4ecdc4;
+            border-radius: 8px;
+            background: white;
+            font-family: 'Comic Neue', cursive;
+            color: #264653;
+        }
+
+        .buttons-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 20px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            font-family: 'Fredoka One', cursive;
+            letter-spacing: 0.5px;
+            min-width: 140px;
+            text-align: center;
+            color: white;
+        }
+
+        #newProblem {
+            background-color: #4ecdc4;
+        }
+
+        #showJump {
+            background-color: #ff9f1c;
+        }
+
+        #checkAnswer {
+            background-color: #2a9d8f;
+        }
+
+        #reset {
+            background-color: #ff6b6b;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .problem-display {
+            text-align: center;
+            font-size: 2em;
+            color: #264653;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f7f7f7;
+            border-radius: 12px;
+            border: 3px solid #4ecdc4;
+            font-weight: bold;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .numberline-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+            padding: 50px 20px;
+            overflow-x: auto;
+            min-height: 200px;
+            background: #f7f7f7;
+            border-radius: 12px;
+            border: 3px solid #ffd166;
+            scroll-behavior: smooth;
+        }
+
+        .numberline {
+            position: relative;
+            height: 6px;
+            background: #264653;
+            margin: 0 40px;
+            border-radius: 3px;
+            min-width: calc(100% - 80px);
+        }
+
+        .number-mark {
+            position: absolute;
+            top: -15px;
+            width: 2px;
+            height: 30px;
+            background: #264653;
+            transform: translateX(-1px);
+        }
+
+        .number-label {
+            position: absolute;
+            top: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #264653;
+            transform: translateX(-50%);
+        }
+
+        .dino {
+            position: absolute;
+            top: -80px;
+            left: 0;
+            transform: translateX(-50%) rotateY(180deg);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            z-index: 10;
+        }
+
+        .dino.jumping {
+            animation: dinoBounce 0.6s ease-out;
+        }
+
+        @keyframes dinoBounce {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) translateY(-60px) scale(1.2); }
+        }
+
+        .jump-arc {
+            position: absolute;
+            top: -60px;
+            height: 2px;
+            background: rgba(255, 159, 28, 0.5);
+            border-radius: 1px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .jump-arc.show {
+            opacity: 1;
+        }
+
+        .jump-label {
+            position: absolute;
+            top: -100px;
+            background: #ffd166;
+            color: #264653;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.9em;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            transform: translateX(-50%);
+            border: 2px solid #ff9f1c;
+            white-space: nowrap;
+        }
+
+        .jump-label.show {
+            opacity: 1;
+            animation: labelPop 0.3s ease-out;
+        }
+
+        @keyframes labelPop {
+            0% { transform: translateX(-50%) scale(0.5); }
+            80% { transform: translateX(-50%) scale(1.1); }
+            100% { transform: translateX(-50%) scale(1); }
+        }
+
+        .feedback {
+            text-align: center;
+            font-size: 1.5em;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .feedback.correct {
+            background: #c1fba4;
+            color: #1b9e3e;
+            border: 3px solid #7ae582;
+            animation: feedbackPop 0.5s ease-out;
+        }
+
+        .feedback.incorrect {
+            background: #ffb3ba;
+            color: #d00000;
+            border: 3px solid #ff8fab;
+            animation: shake 0.5s ease-out;
+        }
+
+        @keyframes feedbackPop {
+            0% { transform: scale(0.8); opacity: 0; }
+            80% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+
+        .score {
+            text-align: center;
+            font-size: 1.3em;
+            color: #264653;
+            margin: 20px 0;
+            font-weight: bold;
+            background: #f0f9ff;
+            padding: 12px;
+            border-radius: 10px;
+            border: 3px solid #4ecdc4;
+        }
+
+        .answer-input {
+            text-align: center;
+            margin: 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .answer-input input {
+            width: 100px;
+            text-align: center;
+            font-size: 1.5em;
+            padding: 10px;
+            font-weight: bold;
+            color: #264653;
+            border: 3px solid #ff9f1c;
+            border-radius: 8px;
+        }
+
+        .answer-input label {
+            font-size: 1.3em;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+                margin-bottom: 15px;
+            }
+            
+            .game-controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .control-group {
+                width: 100%;
+            }
+            
+            .buttons-group {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            button {
+                flex-grow: 1;
+            }
+            
+            .problem-display {
+                font-size: 1.5em;
+                min-height: 60px;
+            }
+            
+            .numberline-container {
+                margin: 15px 0;
+                padding: 30px 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5em;
+                padding: 10px;
+            }
+            
+            .problem-display {
+                font-size: 1.3em;
+            }
+            
+            button {
+                padding: 10px 15px;
+                font-size: 1em;
+                min-width: 120px;
+            }
+            
+            .answer-input {
+                flex-direction: column;
+            }
+            
+            .answer-input input {
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🦖 Dinosaur Number Line Jump 🦕</h1>
+        
+        <div class="game-controls">
+            <div class="control-group">
+                <label for="rangeSelect">Number Range:</label>
+                <select id="rangeSelect">
+                    <option value="0,10">0 to 10</option>
+                    <option value="0,20">0 to 20</option>
+                    <option value="-10,10">-10 to 10</option>
+                    <option value="-20,20">-20 to 20</option>
+                    <option value="-50,50">-50 to 50</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="operationSelect">Operation:</label>
+                <select id="operationSelect">
+                    <option value="addition">Addition</option>
+                    <option value="subtraction">Subtraction</option>
+                    <option value="mixed">Mixed</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <div class="buttons-group">
+                    <button id="newProblem">New Problem</button>
+                    <button id="showJump">Show Jump</button>
+                    <button id="reset">Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="problem-display" id="problemDisplay">
+            Click "New Problem" to start!
+        </div>
+
+        <div class="answer-input">
+            <label for="answerInput">Your Answer:</label>
+            <input type="number" id="answerInput" placeholder="?">
+            <button id="checkAnswer">Check Answer</button>
+        </div>
+
+        <div class="feedback" id="feedback"></div>
+
+        <div class="numberline-container" id="numberlineContainer">
+            <div class="numberline" id="numberline">
+                <div class="dino" id="dino">🦖</div>
+                <div class="jump-arc" id="jumpArc"></div>
+                <div class="jump-label" id="jumpLabel"></div>
+            </div>
+        </div>
+
+        <div class="score" id="score">Score: 0 / 0</div>
+    </div>
+
+<script>
+    class DinoNumberLine {
+  constructor() {
+    this.currentProblem = null;
+    this.currentAnswer = null;
+    this.score = 0;
+    this.attempts = 0;
+    this.range = [0, 10];
+    this.operation = 'addition';
+    this.isJumpShown = false;
+    this.dinoElement = null;
+    
+    this.initElements();
+    this.bindEvents();
+    this.setupNumberLine();
+    this.preloadDinoImages();
+  }
+  
+  initElements() {
+    this.elements = {
+      rangeSelect: document.getElementById('rangeSelect'),
+      operationSelect: document.getElementById('operationSelect'),
+      newProblem: document.getElementById('newProblem'),
+      showJump: document.getElementById('showJump'),
+      reset: document.getElementById('reset'),
+      problemDisplay: document.getElementById('problemDisplay'),
+      answerInput: document.getElementById('answerInput'),
+      checkAnswer: document.getElementById('checkAnswer'),
+      feedback: document.getElementById('feedback'),
+      numberline: document.getElementById('numberline'),
+      numberlineContainer: document.getElementById('numberlineContainer'),
+      dino: document.getElementById('dino'),
+      jumpArc: document.getElementById('jumpArc'),
+      jumpLabel: document.getElementById('jumpLabel'),
+      score: document.getElementById('score')
+    };
+  }
+  
+  preloadDinoImages() {
+    // This is a placeholder for actual image preloading if you add dino images
+    console.log('Preloading assets...');
+  }
+  
+  bindEvents() {
+    this.elements.rangeSelect.addEventListener('change', () => this.updateRange());
+    this.elements.operationSelect.addEventListener('change', () => this.updateOperation());
+    this.elements.newProblem.addEventListener('click', () => this.generateNewProblem());
+    this.elements.showJump.addEventListener('click', () => this.showJump());
+    this.elements.reset.addEventListener('click', () => this.resetGame());
+    this.elements.checkAnswer.addEventListener('click', () => this.checkAnswer());
+    this.elements.answerInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') this.checkAnswer();
+    });
+    
+    // Prevent form submission on Enter in input field
+    this.elements.answerInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') e.preventDefault();
+    });
+  }
+  
+  updateRange() {
+    const rangeStr = this.elements.rangeSelect.value;
+    this.range = rangeStr.split(',').map(Number);
+    this.setupNumberLine();
+    this.resetProblem();
+  }
+  
+  updateOperation() {
+    this.operation = this.elements.operationSelect.value;
+    this.resetProblem();
+  }
+  
+  setupNumberLine() {
+    const [min, max] = this.range;
+    const numberline = this.elements.numberline;
+    
+    // Clear existing marks
+    const existingMarks = numberline.querySelectorAll('.number-mark, .number-label');
+    existingMarks.forEach(mark => mark.remove());
+    
+    // Create number marks and labels
+    const totalNumbers = max - min + 1;
+    const lineWidth = numberline.offsetWidth || 800;
+    const step = Math.max(1, Math.ceil(totalNumbers / 20)); // Show fewer labels for large ranges
+    
+    for (let i = min; i <= max; i += step) {
+      const position = ((i - min) / (max - min)) * lineWidth;
+      
+      // Create mark
+      const mark = document.createElement('div');
+      mark.className = 'number-mark';
+      mark.style.left = position + 'px';
+      numberline.appendChild(mark);
+      
+      // Create label
+      const label = document.createElement('div');
+      label.className = 'number-label';
+      label.textContent = i;
+      label.style.left = position + 'px';
+      numberline.appendChild(label);
+    }
+    
+    // Always show 0 if in range
+    if (min <= 0 && max >= 0 && !(min === 0 && max === 0)) {
+      const zeroPos = ((0 - min) / (max - min)) * lineWidth;
+      
+      const zeroMark = document.createElement('div');
+      zeroMark.className = 'number-mark';
+      zeroMark.style.left = zeroPos + 'px';
+      zeroMark.style.height = '40px'; // Make zero mark taller
+      zeroMark.style.backgroundColor = '#FF6B6B';
+      numberline.appendChild(zeroMark);
+      
+      const zeroLabel = document.createElement('div');
+      zeroLabel.className = 'number-label';
+      zeroLabel.textContent = '0';
+      zeroLabel.style.left = zeroPos + 'px';
+      zeroLabel.style.fontWeight = 'bold';
+      zeroLabel.style.color = '#FF6B6B';
+      numberline.appendChild(zeroLabel);
+    }
+    
+    // Position dino at center initially
+    this.positionDino(0);
+  }
+  
+  positionDino(number) {
+    const [min, max] = this.range;
+    const lineWidth = this.elements.numberline.offsetWidth || 800;
+    const position = ((number - min) / (max - min)) * lineWidth;
+    this.elements.dino.style.left = position + 'px';
+    
+    // Auto-scroll to keep dino visible on small screens
+    const container = this.elements.numberlineContainer;
+    const containerWidth = container.clientWidth;
+    const scrollLeft = position - (containerWidth / 2) + (this.elements.dino.offsetWidth / 2);
+    container.scrollTo({
+      left: scrollLeft,
+      behavior: 'smooth'
+    });
+  }
+  
+  generateNewProblem() {
+      this.resetProblem();
+      
+      const [min, max] = this.range;
+      let num1, num2, operator, answer;
+      
+      if (this.operation === 'addition' || (this.operation === 'mixed' && Math.random() > 0.5)) {
+        num1 = Math.floor(Math.random() * (max - min + 1)) + min;
+        // Ensure we don't get negative numbers in addition problems
+        num2 = Math.floor(Math.random() * (Math.min(10, max - num1)) + 1); 
+        operator = '+'; 
+        answer = num1 + num2;
+        }
+        else {
+          num1 = Math.floor(Math.random() * (max - min + 1)) + min;
+          // Ensure we don't get negative results in subtraction problems
+          num2 = Math.floor(Math.random() * (Math.min(10, num1 - min) + 1));
+          operator = '-';
+          answer = num1 - num2;
+        }
+        
+        // Ensure answer is within range
+        if (answer < min || answer > max) {
+          return this.generateNewProblem();
+        }
+        
+        // Ensure we don't get problems like 5 + 0 or 5 - 0 too often
+        if (num2 === 0 && Math.random() > 0.3) {
+          return this.generateNewProblem();
+        }
+        
+        this.currentProblem = { num1, num2, operator, answer };
+        this.elements.problemDisplay.textContent = `${num1} ${operator} ${num2} = ?`;
+        this.elements.answerInput.value = '';
+        this.elements.answerInput.focus();
+        
+        // Position dino at starting number
+        this.positionDino(num1);
+        this.isJumpShown = false;
+        
+        // Change dino emoji based on operation
+        this.elements.dino.textContent = operator === '+' ? '🦖' : '🦕';
+      }
+      
+      showJump() {
+  if (!this.currentProblem) return;
+  if (this.isJumpShown) return;
+  
+  const { num1, num2, operator, answer } = this.currentProblem;
+  const [min, max] = this.range;
+  const lineWidth = this.elements.numberline.offsetWidth || 800;
+  
+  // Calculate positions
+  const startPos = ((num1 - min) / (max - min)) * lineWidth;
+  const endPos = ((answer - min) / (max - min)) * lineWidth;
+  const jumpDistance = endPos - startPos;
+  
+  // Determine jump direction and rotate dino accordingly
+  const isJumpingRight = jumpDistance > 0;
+  this.elements.dino.style.transform = `translateX(-50%) rotateY(${isJumpingRight ? '180deg' : '0deg'})`;
+  
+  // Show jump arc
+  const arc = this.elements.jumpArc;
+  arc.style.left = Math.min(startPos, endPos) + 'px';
+  arc.style.width = Math.abs(jumpDistance) + 'px';
+  arc.style.height = Math.min(100, Math.abs(jumpDistance)) / 2 + 'px';
+  arc.style.borderRadius = '50% 50% 0 0';
+  arc.style.top = (-Math.min(100, Math.abs(jumpDistance))) / 2 + 'px';
+  arc.classList.add('show');
+  
+  // Show jump label
+  const label = this.elements.jumpLabel;
+  label.textContent = `${operator}${Math.abs(num2)}`;
+  label.style.left = (startPos + endPos) / 2 + 'px';
+  label.style.top = (-Math.min(100, Math.abs(jumpDistance)) / 2 - 20) + 'px';
+  label.classList.add('show');
+  
+  // Animate dino jump
+  this.elements.dino.classList.add('jumping');
+  
+  setTimeout(() => {
+    this.positionDino(answer);
+    this.elements.dino.classList.remove('jumping');
+  }, 400);
+  
+  this.isJumpShown = true;
+}
+        
+        checkAnswer() {
+          if (!this.currentProblem) {
+            this.showFeedback('Please generate a problem first!', 'incorrect');
+            return;
+          }
+          
+          const userAnswer = parseInt(this.elements.answerInput.value);
+          if (isNaN(userAnswer)) {
+            this.showFeedback('Please enter a valid number!', 'incorrect');
+            return;
+          }
+          
+          const correctAnswer = this.currentProblem.answer;
+          this.attempts++;
+          
+          if (userAnswer === correctAnswer) {
+            this.score++;
+            this.showFeedback('Correct! Great job! 🎉', 'correct');
+            if (!this.isJumpShown) {
+              setTimeout(() => this.showJump(), 500);
+            }
+            
+            // Celebrate with confetti for correct answer
+            if (typeof confetti === 'function') {
+              confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+              });
+            }
+            
+            // Generate new problem after delay
+            setTimeout(() => {
+              this.generateNewProblem();
+            }, 2000);
+          } else {
+            this.showFeedback(`Incorrect. Try again! 🤔`, 'incorrect');
+            this.elements.answerInput.select();
+          }
+          
+          this.updateScore();
+        }
+        
+        showFeedback(message, type) {
+          const feedback = this.elements.feedback;
+          feedback.textContent = message;
+          feedback.className = `feedback ${type}`;
+          feedback.style.display = 'block';
+          
+          setTimeout(() => {
+            feedback.style.display = 'none';
+          }, 3000);
+        }
+        
+        updateScore() {
+          const accuracy = this.attempts > 0 ? Math.round((this.score / this.attempts) * 100) : 0;
+          this.elements.score.textContent = `Score: ${this.score} / ${this.attempts} (${accuracy}% accuracy)`;
+          
+          // Color code based on performance
+          if (accuracy > 80) {
+            this.elements.score.style.color = '#2E8B57';
+            this.elements.score.style.background = 'rgba(144, 238, 144, 0.3)';
+          } else if (accuracy > 50) {
+            this.elements.score.style.color = '#FF8C00';
+            this.elements.score.style.background = 'rgba(255, 215, 0, 0.3)';
+          } else {
+            this.elements.score.style.color = '#DC143C';
+            this.elements.score.style.background = 'rgba(255, 182, 193, 0.3)';
+          }
+        }
+        
+        resetProblem() {
+          this.currentProblem = null;
+          this.elements.problemDisplay.textContent = 'Click "New Problem" to start!';
+          this.elements.answerInput.value = '';
+          this.elements.feedback.style.display = 'none';
+          this.elements.jumpArc.classList.remove('show');
+          this.elements.jumpLabel.classList.remove('show');
+          this.positionDino(0);
+          this.isJumpShown = false;
+          this.elements.dino.textContent = '🦕';
+        }
+        
+        resetGame() {
+          this.score = 0;
+          this.attempts = 0;
+          this.updateScore();
+          this.resetProblem();
+        }
+      }
+      
+      // Initialize the game when DOM is loaded
+      document.addEventListener('DOMContentLoaded', () => {
+        const game = new DinoNumberLine();
+        
+        // Add confetti library if not already loaded
+        if (typeof confetti === 'undefined') {
+          const script = document.createElement('script');
+          script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js';
+          document.head.appendChild(script);
+        }
+      });
+      
+      
+      
+      
+</script>
+</body>
+</html>

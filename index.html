@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SB - Fun Activities for Kids</title>
+    
+    <!-- Import Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&family=Fredoka+One&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Color Palette */
+        :root {
+            --primary: #8516DC;
+            /* Vibrant coral */
+            --accent: #FF6DC8;
+            /* Bright sky blue */
+            --success: #FFD166;
+            /* Sunny yellow */
+            --dark: #2B2D42;
+            /* Deep navy */
+            --light: #F8F7FF;
+            /* Soft white */
+            --secondary: #06D6A0;
+            /* Mint green */
+            --blue: #2A8FE8;
+            /* Soft purple */
+        }
+        
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Baloo 2', cursive;
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        h1,
+        h2,
+        h3 {
+            font-family: 'Fredoka One', cursive;
+            font-weight: normal;
+            letter-spacing: 0.5px;
+        }
+        
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+        
+        a{
+            text-decoration: none;
+        }
+        
+        /* CSS Icons */
+        .icon {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            stroke-width: 0;
+            stroke: currentColor;
+            fill: currentColor;
+            vertical-align: middle;
+        }
+        
+        /* Header & Navigation */
+        header {
+            background-color: var(--primary);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            font-family: 'Fredoka One', cursive;
+            font-size: 2rem;
+            font-weight: normal;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .logo span {
+            color: var(--accent);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav li {
+            margin-left: 1.5rem;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 0.5rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        nav a:hover {
+            background-color: var(--success);
+            color: var(--dark);
+        }
+        
+        /* Hero hero */
+        .hero {
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        
+        /* Activity Cards */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin: 2rem 0;
+            color: var(--primary);
+            font-size: 2.5rem;
+        }
+        
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .activity-card {
+            background-color: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .activity-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-image img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .card-image img:hover {
+            transform: scale(1.03);
+        }
+        
+        .activity-card {
+            transition: box-shadow 0.3s;
+        }
+        
+        .activity-card:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card-image .icon {
+            width: 80px;
+            height: 80px;
+        }
+        
+        .card-content {
+            padding: 1.5rem;
+        }
+        
+        .card-title {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+        
+        .card-text {
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+        
+        .age-tag {
+            display: inline-block;
+            background-color: var(--success);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        
+        .footer-logo {
+            font-family: 'Fredoka One', cursive;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+        
+        .copyright {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+            }
+            
+            nav ul {
+                margin-top: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            nav li {
+                margin: 0.5rem;
+            }
+            
+            .activities-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header with Navigation and Logo -->
+    <header>
+        <div class="header-container">
+            <a href="#" class="logo">S<span>B</span></a>
+            <nav>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Activities</a></li>
+                    <li><a href="#">Games</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    
+    <div class="hero">
+        <img src="/hero.jpg">
+    </div>
+    
+    <div class="container">
+        <h2 class="section-title">Explore Our Activities</h2>
+        <div class="activities-grid" id="activities-container">
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-logo">Superbrains</div>
+        <div class="footer-links">
+            <a href="#">About</a>
+            <a href="#">Contact</a>
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+        </div>
+        <p class="copyright">© 2023 Superbrain Kids Activities. All rights reserved.</p>
+    </footer>
+    <script>
+        // Game activity data with links
+        const gameActivities = [
+        {
+            id: "dino-jump",
+            title: "Dino Jump",
+            description: "Jump over obstacles with our friendly dinosaur!",
+            ageRange: "Ages 5-10",
+            imageUrl: "dino.jpg",
+            bgColor: "#FF9F1C",
+            gameUrl: "dino-jump.html"
+        },
+        {
+            id: "flappy-bird",
+            title: "Flappy Bird",
+            description: "Navigate your bird through obstacles!",
+            ageRange: "Ages 6-12",
+            imageUrl: "flappy-bird.jpg",
+            bgColor: "#2EC4B6",
+            gameUrl: "/flappy-bird/play.html"
+        },
+        {
+            id: "place-value",
+            title: "Place Value",
+            description: "Learn numbers and their place values.",
+            ageRange: "Ages 7-12",
+            imageUrl: "images/place-value.jpg",
+            bgColor: "#E71D36",
+            gameUrl: "place-value.html",
+            fallbackImage: "images/math-fallback.jpg"
+        },
+        {
+            id: "skip-count",
+            title: "Skip Count",
+            description: "Practice counting by 2s, 5s, and 10s.",
+            ageRange: "Ages 5-9",
+            imageUrl: "images/skip-count.jpg",
+            bgColor: "#FF9F1C",
+            gameUrl: "skip-count.html",
+            fallbackImage: "images/math-fallback.jpg"
+        },
+        {
+            id: "tree-bond",
+            title: "Tree Bond",
+            description: "Explore number bonds with our tree game.",
+            ageRange: "Ages 6-10",
+            imageUrl: "images/tree-bond.jpg",
+            bgColor: "#2EC4B6",
+            gameUrl: "tree-bond.html",
+            fallbackImage: "images/math-fallback.jpg"
+        }];
+        
+        // Function to create a card element
+        function createGameCard(game) {
+            const card = document.createElement('div');
+            card.className = 'activity-card';
+            
+            card.innerHTML = `
+                <a href="${game.gameUrl}" class="game-link">
+                    <div class="card-image" style="background-color: ${game.bgColor}">
+                        <img src="${game.imageUrl}" alt="${game.title}" 
+                             onerror="this.src='${game.fallbackImage || 'images/default-fallback.jpg'}'">
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">${game.title}</h3>
+                        <p class="card-text">${game.description}</p>
+                        <span class="age-tag">${game.ageRange}</span>
+                    </div>
+                </a>
+            `;
+            
+            return card;
+        }
+        
+        // Function to render all cards
+        function renderGameActivities() {
+            const container = document.getElementById('activities-container');
+            
+            // Clear existing content
+            container.innerHTML = '';
+            
+            // Create and append cards
+            gameActivities.forEach(game => {
+                const card = createGameCard(game);
+                container.appendChild(card);
+            });
+        }
+        
+        // Render cards when page loads
+        document.addEventListener('DOMContentLoaded', renderGameActivities);
+        
+        // Optional: Add keyboard navigation for accessibility
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const focusedCard = document.activeElement.closest('.activity-card');
+                if (focusedCard) {
+                    const link = focusedCard.querySelector('.game-link');
+                    if (link) {
+                        link.click();
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

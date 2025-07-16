@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tree Number Bonding Activity</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/bonds/style.css" type="text/css" media="all" />
+</head>
+<body>
+    <div class="container">
+        <h1>🌳 Tree Number Bonds 🌳</h1>
+        
+        <div class="instructions">
+             Pick a number and find the missing parts on the tree branches! 
+        </div>
+        
+        <div class="controls">
+            <button class="number-btn" data-number="10">Bond 10</button>
+            <button class="number-btn" data-number="20">Bond 20</button>
+            <button class="number-btn" data-number="100">Bond 100</button>
+            <button class="number-btn" data-number="200">Bond 200</button>
+        </div>
+        
+        <div class="problems-container" id="problemsContainer">
+            <!-- Problems will be generated here -->
+        </div>
+        
+        <div class="feedback" id="feedback"></div>
+        <div class="buttons">
+                    <button class="check-btn" id="checkBtn" onclick="checkAnswers()"> Check </button>
+        <button class="new-problem-btn" id="newProblemBtn" onclick="generateNewProblems()"> New Tree!</button>
+        </div>
+
+        
+        <div class="score">
+            <span id="scoreDisplay"> Score: 0 / 0 </span>
+        </div>
+    </div>
+
+<script src="/bonds/script.js"></script>
+</body>
+</html>

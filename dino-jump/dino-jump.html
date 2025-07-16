@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Fredoka+One&display=swap" rel="stylesheet">
+    <title>🦖 Math Jump Dino (0-10)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Comic Neue';
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background: white;
+        }
+        
+        .game-container {
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+            background: #F1FFF4;
+            border: 3px solid #EDEDED;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2E8B57;
+            font-size: 2.2em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .math-input {
+            padding: 12px 20px;
+            border: 3px solid #FFD700;
+            border-radius: 25px;
+            font-size: 1.3em;
+            font-family: inherit;
+            text-align: center;
+            width: 180px;
+            background: #FFF8DC;
+        }
+        
+        .jump-btn {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .jump-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+        
+        .jump-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .equation-display {
+            text-align: center;
+            font-size: 1.8em;
+            color: #2E8B57;
+            margin-bottom: 20px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            border: 2px solid #87CEEB;
+        }
+        
+        .number-line-container {
+            position: relative;
+            width: 100%;
+            height: 160px;
+            margin: 20px 0;
+            background: #F5F5DC;
+            border-radius: 15px;
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        .number-line {
+            position: absolute;
+            bottom: 60px;
+            left: 20px;
+            right: 20px;
+            height: 4px;
+            background: #8B4513;
+            border-radius: 2px;
+        }
+        
+        .number-tick {
+            position: absolute;
+            bottom: 55px;
+            width: 2px;
+            height: 20px;
+            background: #8B4513;
+            border-radius: 1px;
+        }
+        
+        .number-label {
+            position: absolute;
+            bottom: 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #2E8B57;
+            text-align: center;
+            width: 20px;
+            margin-left: -10px;
+        }
+        
+        .dinosaur {
+            position: absolute;
+            bottom: 70px;
+            width: 50px;
+            height: 50px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3em;
+            transform-origin: bottom center;
+            transition: left 0.3s ease-out;
+        }
+        
+        .dinosaur::before {
+            content: '🦖';
+            font-size: 35px;
+            position: absolute;
+            transform: rotateY(180deg);
+            transition: transform 0.2s ease;
+        }
+        
+        .dinosaur.facing-left::before {
+            transform: rotateY(0deg);
+        }
+        
+        .dinosaur.jumping {
+            animation: jump 0.5s ease-in-out;
+        }
+        
+        @keyframes jump {
+            0% {
+                transform: translateY(0) scale(1);
+            }
+            
+            50% {
+                transform: translateY(-30px) scale(1.1);
+            }
+            
+            100% {
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .jump-arc {
+            position: absolute;
+            bottom: 70px;
+            height: 0;
+            width: 0;
+            overflow: visible;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        .jump-arc.show {
+            opacity: 1;
+            animation: arcFade 0.8s forwards;
+        }
+        
+        @keyframes arcFade {
+            0% {
+                opacity: 1;
+            }
+            
+            100% {
+                opacity: 0;
+            }
+        }
+        
+        .jump-arc::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: var(--jump-distance);
+            height: var(--jump-height);
+            background: transparent;
+        }
+        
+        .jump-arc.parabola::before {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,100 Q50,0 100,100" fill="none" stroke="rgba(255,100,100,0.8)" stroke-width="3" stroke-dasharray="5,3" /></svg>') no-repeat;
+            background-size: 100% 100%;
+        }
+        
+        .feedback {
+            text-align: center;
+            font-size: 1.3em;
+            margin-top: 15px;
+            min-height: 40px;
+            font-weight: bold;
+        }
+        
+        .feedback.success {
+            color: #228B22;
+        }
+        
+        .feedback.error {
+            color: #FF4444;
+        }
+        
+        .preset-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .preset-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+            color: white;
+        }
+        
+        .preset-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .preset-btn:nth-child(1) {
+            background: #FF6B6B;
+        }
+        
+        .preset-btn:nth-child(2) {
+            background: #4ECDC4;
+        }
+        
+        .preset-btn:nth-child(3) {
+            background: #45B7D1;
+        }
+        
+        .preset-btn:nth-child(4) {
+            background: #F7DC6F;
+            color: #2C3E50;
+        }
+        
+        .preset-btn:nth-child(5) {
+            background: #BB8FCE;
+        }
+        
+        .preset-btn:nth-child(6) {
+            background: #58D68D;
+        }
+        
+        .preset-btn:nth-child(7) {
+            background: #F1948A;
+        }
+        
+        .instructions {
+            background: #F5F5DC;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+        
+        .instructions h3 {
+            color: #2E8B57;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        
+        .instructions p {
+            color: #555;
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 600px) {
+            .game-container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .math-input {
+                width: 140px;
+                font-size: 1.1em;
+                padding: 10px 15px;
+            }
+            
+            .number-line-container {
+                height: 140px;
+                padding: 15px;
+            }
+            
+            .dinosaur {
+                width: 40px;
+                height: 40px;
+                bottom: 60px;
+            }
+            
+            .dinosaur::before {
+                font-size: 30px;
+            }
+            
+            .number-line {
+                bottom: 50px;
+            }
+            
+            .number-tick {
+                bottom: 45px;
+            }
+            
+            .number-label {
+                bottom: 25px;
+                font-size: 1em;
+            }
+            
+            .preset-btn {
+                padding: 6px 12px;
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="game-container">
+        <h1> Math Jump Dino</h1>
+        
+        <div class="instructions">
+            <h3>How to Play:</h3>
+            <p>Enter a math problem (like 3+4 or 8-2) and watch the dinosaur jump along the number line! The dino faces right for addition and left for subtraction.</p>
+        </div>
+        
+        <div class="preset-buttons">
+            <button class="preset-btn" onclick="setEquation('2+3')">2+3</button>
+            <button class="preset-btn" onclick="setEquation('5+4')">5+4</button>
+            <button class="preset-btn" onclick="setEquation('7-2')">7-2</button>
+            <button class="preset-btn" onclick="setEquation('9-5')">9-5</button>
+            <button class="preset-btn" onclick="setEquation('7+3')">7+3</button>
+            <button class="preset-btn" onclick="setEquation('1+8')">1+8</button>
+            <button class="preset-btn" onclick="setEquation('10-8')">10-8</button>
+        </div>
+        
+        <div class="controls">
+            <input type="text" class="math-input" id="mathInput" placeholder="Ex: 5+3" maxlength="5">
+            <button class="jump-btn" id="jumpBtn" onclick="startJump()">Let's Jump! </button>
+        </div>
+        
+        <div class="equation-display" id="equationDisplay">
+            Enter a math problem!
+        </div>
+        
+        <div class="number-line-container">
+            <div class="number-line"></div>
+            <div class="dinosaur" id="dinosaur"></div>
+            <div class="jump-arc" id="jumpArc"></div>
+        </div>
+        
+        <div class="feedback" id="feedback"></div>
+    </div>
+    
+    <script>
+        const dinosaur = document.getElementById('dinosaur');
+        const equationDisplay = document.getElementById('equationDisplay');
+        const feedback = document.getElementById('feedback');
+        const mathInput = document.getElementById('mathInput');
+        const jumpBtn = document.getElementById('jumpBtn');
+        const jumpArc = document.getElementById('jumpArc');
+        
+        let currentEquation = null;
+        let isAnimating = false;
+        
+        // Initialize number line (0-10)
+        function initializeNumberLine() {
+            const container = document.querySelector('.number-line-container');
+            const containerWidth = container.offsetWidth - 40;
+            
+            // Clear existing ticks and labels
+            container.querySelectorAll('.number-tick, .number-label').forEach(el => el.remove());
+            
+            for (let i = 0; i <= 10; i++) {
+                const tick = document.createElement('div');
+                tick.className = 'number-tick';
+                tick.style.left = `${20 + (i * (containerWidth / 10))}px`;
+                container.appendChild(tick);
+                
+                const label = document.createElement('div');
+                label.className = 'number-label';
+                label.textContent = i;
+                label.style.left = `${20 + (i * (containerWidth / 10))}px`;
+                container.appendChild(label);
+            }
+            
+            positionDinosaur(0);
+        }
+        
+        function positionDinosaur(number) {
+            const container = document.querySelector('.number-line-container');
+            const containerWidth = container.offsetWidth - 40;
+            const position = 20 + (number * (containerWidth / 10)) - 25;
+            dinosaur.style.left = `${position}px`;
+        }
+        
+        function parseEquation(input) {
+            const cleaned = input.replace(/\s/g, '');
+            const addMatch = cleaned.match(/^(\d+)\+(\d+)$/);
+            const subMatch = cleaned.match(/^(\d+)-(\d+)$/);
+            
+            if (addMatch) {
+                const num1 = parseInt(addMatch[1]);
+                const num2 = parseInt(addMatch[2]);
+                if (num1 > 10 || num2 > 10) return null;
+                return {
+                    num1: num1,
+                    num2: num2,
+                    operation: '+',
+                    result: num1 + num2
+                };
+            } else if (subMatch) {
+                const num1 = parseInt(subMatch[1]);
+                const num2 = parseInt(subMatch[2]);
+                if (num1 > 10 || num2 > 10) return null;
+                return {
+                    num1: num1,
+                    num2: num2,
+                    operation: '-',
+                    result: num1 - num2
+                };
+            }
+            return null;
+        }
+        
+        function setEquation(equation) {
+            mathInput.value = equation;
+            const parsed = parseEquation(equation);
+            if (parsed) {
+                currentEquation = parsed;
+                equationDisplay.textContent = `${parsed.num1} ${parsed.operation} ${parsed.num2} = ?`;
+                positionDinosaur(parsed.num1);
+                feedback.textContent = '';
+                feedback.className = 'feedback';
+                
+                // Set initial dino direction
+                if (parsed.operation === '+') {
+                    dinosaur.classList.remove('facing-left');
+                } else {
+                    dinosaur.classList.add('facing-left');
+                }
+            }
+        }
+        
+        async function animateStepByStep(start, end, operation) {
+            const container = document.querySelector('.number-line-container');
+            const containerWidth = container.offsetWidth - 40;
+            const step = operation === '+' ? 1 : -1;
+            const steps = Math.abs(end - start);
+            const totalDistance = Math.abs(end - start);
+            
+            // Set initial direction
+            if (operation === '+') {
+                dinosaur.classList.remove('facing-left');
+            } else {
+                dinosaur.classList.add('facing-left');
+            }
+            
+            for (let i = 0; i < steps; i++) {
+                await new Promise(resolve => {
+                    // Calculate current and next positions
+                    const current = start + (step * i);
+                    const next = start + (step * (i + 1));
+                    
+                    const currentPos = 20 + (current * (containerWidth / 10));
+                    const nextPos = 20 + (next * (containerWidth / 10));
+                    const jumpDistance = Math.abs(nextPos - currentPos);
+                    const jumpHeight = 50 + (totalDistance * 1.5);
+                    
+                    // Position the jump arc - always start from current position
+                    jumpArc.style.left = `${currentPos}px`;
+                    jumpArc.style.setProperty('--jump-distance', `${jumpDistance}px`);
+                    jumpArc.style.setProperty('--jump-height', `${jumpHeight}px`);
+                    
+                    // Set arc direction based on operation
+                    jumpArc.style.transform = operation === '+' ? 'scaleX(1)' : 'scaleX(-1)';
+                    
+                    jumpArc.classList.add('parabola', 'show');
+                    
+                    // Animate the dinosaur jump
+                    dinosaur.classList.add('jumping');
+                    
+                    // Update dinosaur position after a short delay
+                    setTimeout(() => {
+                        const position = 20 + (next * (containerWidth / 10)) - 25;
+                        dinosaur.style.left = `${position}px`;
+                        
+                        // Clean up animations when complete
+                        setTimeout(() => {
+                            dinosaur.classList.remove('jumping');
+                            jumpArc.classList.remove('show');
+                            resolve();
+                        }, 300);
+                    }, 100);
+                });
+                
+                // Small pause between jumps
+                if (i < steps - 1) {
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                }
+            }
+            
+            // Ensure arc is hidden after all jumps
+            jumpArc.classList.remove('show', 'parabola');
+        }
+        
+        async function startJump() {
+            if (isAnimating) return;
+            
+            const input = mathInput.value.trim();
+            if (!input) {
+                feedback.textContent = 'Please enter a math problem!';
+                feedback.className = 'feedback error';
+                return;
+            }
+            
+            const equation = parseEquation(input);
+            if (!equation) {
+                feedback.textContent = 'Please enter a valid equation (like 5+3 or 8-2) with numbers 0-10';
+                feedback.className = 'feedback error';
+                return;
+            }
+            
+            if (equation.result < 0 || equation.result > 10) {
+                feedback.textContent = 'Result must be between 0 and 10!';
+                feedback.className = 'feedback error';
+                return;
+            }
+            
+            isAnimating = true;
+            jumpBtn.disabled = true;
+            currentEquation = equation;
+            
+            // Show the equation
+            equationDisplay.textContent = `${equation.num1} ${equation.operation} ${equation.num2} = ?`;
+            
+            // Start dino at first number
+            positionDinosaur(equation.num1);
+            
+            // Wait a moment
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Animate step by step
+            await animateStepByStep(equation.num1, equation.result, equation.operation);
+            
+            // Show result and feedback
+            equationDisplay.textContent = `${equation.num1} ${equation.operation} ${equation.num2} = ${equation.result}`;
+            
+            const messages = [
+                'Great job! 🎉',
+                'Excellent! 🌟',
+                'Perfect! 👏',
+                'Amazing! 🎊',
+                'Well done! 🏆'
+            ];
+            feedback.textContent = messages[Math.floor(Math.random() * messages.length)];
+            feedback.className = 'feedback success';
+            
+            isAnimating = false;
+            jumpBtn.disabled = false;
+        }
+        
+        mathInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                startJump();
+            }
+        });
+        
+        mathInput.addEventListener('input', (e) => {
+            feedback.textContent = '';
+            feedback.className = 'feedback';
+        });
+        
+        // Initialize on load
+        window.addEventListener('load', () => {
+            initializeNumberLine();
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            setTimeout(initializeNumberLine, 100);
+        });
+    </script>
+</body>
+
+</html>
